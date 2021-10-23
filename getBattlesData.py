@@ -6,9 +6,12 @@ import ssl
 from multiprocessing.pool import ThreadPool as Pool
 import traceback
 import encodings.idna
+import helper
 
 import time
 start_time = time.time()
+
+totalUsers = 0
 
 pool_size = 10
 
@@ -23,6 +26,7 @@ def divide_chunks(l, n):
         yield l[i:i + n]
 
 def getUserBattles(username):
+    counter = 0
     try:
         with urllib.request.urlopen('https://game-api.splinterlands.com/battle/history?player='+username, context=ssl.create_default_context(cafile=certifi.where())) as url:
             data = json.loads(url.read().decode())
@@ -65,13 +69,18 @@ def getUserBattles(username):
                 # "player_rating_final": 211,
                 battle['player_rating_final'] = i['player_' + num + '_rating_final']
                 battle['winner'] = i['winner']
+                
 
             battleDB.append(battle)
+            counter = counter + 1
+        print(counter," battles collected from ",username)
     except Exception as e:
         print(traceback.format_exc())
+    
 
 
 print("Fetching data from ", len(users), " users")
+totalUsers = len(users)
 batch = list(divide_chunks(users,100))
 
 for i in batch:
@@ -83,8 +92,16 @@ for i in batch:
     time.sleep(40)
 print("Generated ",len(battleDB)," battle data.")
 
+with open("newHistory.json") as file:
+    data = json.load(file)
+    finalList = data + battleDB
+file.close
 
 with open("newHistory.json", "w") as outfile:
-    outfile.write(json.dumps(battleDB))
+    outfile.write(json.dumps(finalList))
+    print("newHistory file was updated but not yet trimmed, possible duplicates may arrise")
+outfile.close
+
+helper.removeDuplicates('newHistory.json')
 
 print("Process finished --- %s seconds ---" % (time.time() - start_time))
