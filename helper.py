@@ -32,7 +32,7 @@ def removeDuplicates(filePath):
         file.close
 
     except TypeError:
-        
+        """
         #cleaned = []
         #[cleaned.append(x) for x in data if x not in cleaned] 
         cleaned = []
@@ -53,20 +53,20 @@ def removeDuplicates(filePath):
         
         """
         cleaned = pd.DataFrame(data)
-        cleaned.drop_duplicates
-        cleaned = list(filter(None, cleaned))
+        cleaned = cleaned.drop_duplicates(subset=['battle_queue_id'])
         print(str(len(cleaned)) +  " unique items.")
-        finalData = json.dumps(cleaned)
+        output = cleaned.to_json(orient='records')
         file.close
-
+        
         with open(filePath, 'w') as file:
-                file.write(finalData)
+                file.write(output)
         file.close 
-        """
+        
+        
     except Exception as e:
         print(traceback.format_exc())
 
-removeDuplicates('newHistory.json')
+removeDuplicates('users.json')
 
     
     

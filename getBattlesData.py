@@ -102,6 +102,6 @@ with open("newHistory.json", "w") as outfile:
     print("newHistory file was updated but not yet trimmed, possible duplicates may arrise")
 outfile.close
 
-helper.removeDuplicates('newHistory.json')
+#helper.removeDuplicates('newHistory.json')
 
 print("Process finished --- %s seconds ---" % (time.time() - start_time))
