@@ -5,7 +5,6 @@ import certifi
 import ssl
 from multiprocessing.pool import ThreadPool as Pool
 import traceback
-import encodings.idna
 import helper
 
 import time
@@ -76,7 +75,17 @@ def getUserBattles(username):
         print(counter," battles collected from ",username)
     except Exception as e:
         print(traceback.format_exc())
-    
+
+def updateHistory():
+    with open("newHistory.json") as file:
+        data = json.load(file)
+        finalList = data + battleDB
+    file.close
+
+    with open("newHistory.json", "w") as outfile:
+        outfile.write(json.dumps(finalList))
+        print("newHistory.json file was updated!")
+    outfile.close   
 
 
 print("Fetching data from ", len(users), " users")
@@ -88,19 +97,25 @@ for i in batch:
     pool.map_async(getUserBattles, i)
     pool.close()
     pool.join()
+    print("Updating newHistory.json")
+    updateHistory()
+    print("Removing duplicates from newHistory.json")
+    helper.removeDuplicates('newHistory.json')
+    print("Partially generated ",len(battleDB)," battle data.")
     print("waiting for next batch...")
     time.sleep(40)
-print("Generated ",len(battleDB)," battle data.")
+print("Total generated ",len(battleDB)," battle data.")
 
-with open("newHistory.json") as file:
-    data = json.load(file)
-    finalList = data + battleDB
-file.close
+"""def updateHistory():
+    with open("newHistory.json") as file:
+        data = json.load(file)
+        finalList = data + battleDB
+    file.close
 
-with open("newHistory.json", "w") as outfile:
-    outfile.write(json.dumps(finalList))
-    print("newHistory file was updated but not yet trimmed, possible duplicates may arrise")
-outfile.close
+    with open("newHistory.json", "w") as outfile:
+        outfile.write(json.dumps(finalList))
+        print("newHistory file was updated but not yet trimmed, possible duplicates may arrise")
+    outfile.close"""
 
 #helper.removeDuplicates('newHistory.json')
 
