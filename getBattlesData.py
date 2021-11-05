@@ -24,10 +24,24 @@ def divide_chunks(l, n):
     for i in range(0, len(l), n): 
         yield l[i:i + n]
 
+# define the countdown func.
+def countdown(t):
+    
+    while t:
+        mins, secs = divmod(t, 60)
+        timer = '{:02d}:{:02d}'.format(mins, secs)
+        print(timer, end="\r")
+        time.sleep(1)
+        t -= 1
+      
+    print('Good bye!')
+    time.sleep(2)
+
+
 def getUserBattles(username):
     counter = 0
     try:
-        with urllib.request.urlopen('https://game-api.splinterlands.com/battle/history?player='+username, context=ssl.create_default_context(cafile=certifi.where())) as url:
+        with urllib.request.urlopen('https://api2.splinterlands.com/battle/history?player='+username, context=ssl.create_default_context(cafile=certifi.where())) as url:
             data = json.loads(url.read().decode())
             battles = data['battles']
         
@@ -87,9 +101,10 @@ def updateHistory():
         print("newHistory.json file was updated!")
     outfile.close   
 
-
-print("Fetching data from ", len(users), " users")
+print("Fork by Decreo: https://github.com/decreo17/Splinterlands-Battle-List")
+print("\nFetching data from ", len(users), " users")
 totalUsers = len(users)
+
 batch = list(divide_chunks(users,100))
 
 for i in batch:
@@ -97,14 +112,14 @@ for i in batch:
     pool.map_async(getUserBattles, i)
     pool.close()
     pool.join()
-    print("Updating newHistory.json")
+    print("\nUpdating newHistory.json")
     updateHistory()
-    print("Removing duplicates from newHistory.json")
+    print("\nRemoving duplicates from newHistory.json")
     helper.removeDuplicates('newHistory.json')
-    print("Partially generated ",len(battleDB)," battle data.")
+    print("\nPartially generated ",len(battleDB)," battle data.")
     print("waiting for next batch...")
     time.sleep(40)
-print("Total generated ",len(battleDB)," battle data.")
+print("\nTotal generated ",len(battleDB)," battle data.")
 
 """def updateHistory():
     with open("newHistory.json") as file:
@@ -117,6 +132,6 @@ print("Total generated ",len(battleDB)," battle data.")
         print("newHistory file was updated but not yet trimmed, possible duplicates may arrise")
     outfile.close"""
 
-#helper.removeDuplicates('newHistory.json')
+print("\nProcess finished --- %s seconds ---" % (time.time() - start_time))
 
-print("Process finished --- %s seconds ---" % (time.time() - start_time))
+countdown(10)
