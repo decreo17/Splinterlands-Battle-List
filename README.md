@@ -1,7 +1,7 @@
 # Splinterlands-Battle-List 
 Forked from AgentOrange: https://github.com/ryanbautista19/Splinterlands-Battle-List
 
-Get this forked from: https://github.com/decreo17/Splinterlands-Battle-List
+Get this fork from: https://github.com/decreo17/Splinterlands-Battle-List
 
 ## Download the app from the release
 
